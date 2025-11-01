@@ -37,9 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     setupValidation();
     
-    // Set today's date as default for data emiterii
+    // Set today's date as default for data emiterii (readonly)
     const today = new Date().toISOString().split('T')[0];
-    dataEmiteriiInput.value = today;
+    if (dataEmiteriiInput) {
+        dataEmiteriiInput.value = today;
+        dataEmiteriiInput.readOnly = true;
+    }
 });
 
 function setupEventListeners() {
@@ -181,63 +184,95 @@ function generatePaymentOrder() {
 
     const formData = collectFormData();
     
-    // Generate TXT payment order
-    const paymentOrder = generatePaymentOrderTxt(formData);
-    
-    // Download as file
-    downloadFile(paymentOrder, `ordin_plata_PV${formData.numarProcesVerbal}.txt`, 'text/plain');
+    // Generate PDF payment order
+    generatePaymentOrderPdf(formData);
     
     showMessage('Ordinul de plată a fost generat cu succes!', 'success');
 }
 
-function generatePaymentOrderTxt(formData) {
-    const today = new Date().toLocaleDateString('ro-RO');
-    const lines = [
-        '================================================================',
-        '                   ORDIN DE PLATĂ',
-        '================================================================',
-        '',
-        `Număr ordin: ${Date.now()}`,
-        `Data emiterii: ${today}`,
-        '',
-        'PLĂTITOR:',
-        `  Nume: ${formData.nume} ${formData.prenume}`,
-        `  CNP/CUI: ${formData.cnpSauCui}`,
-        `  Email: ${formData.email || 'N/A'}`,
-        `  Adresă: ${formData.adresaPostala}`,
-        `  IBAN: ${formData.IBAN}`,
-        `  Bancă (BIC): ${formData.bancaPlatitorului}`,
-        '',
-        'BENEFICIAR:',
-        '  Primăria Municipiului București - Serviciul Amenzi Parcare',
-        '  Cod Fiscal: 43210000',
-        '  IBAN: RO49BBBB1B31007593841111',
-        '  Bancă: BBBRO22',
-        '',
-        'DETALII PLATĂ:',
-        `  Număr Proces Verbal: ${formData.numarProcesVerbal}`,
-        `  Valoare Amenda Inițială: ${valoareAmendaInput.value} RON`,
-        `  Suma Totală de Plată: ${calculatedSum.toFixed(2)} RON`,
-        `  Descriere: ${formData.descrierePlata || 'Plată amendă parcare'}`,
-        '',
-        '================================================================',
-        `Generat la: ${new Date().toLocaleString('ro-RO')}`,
-        '================================================================'
-    ];
+function generatePaymentOrderPdf(formData) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
     
-    return lines.join('\n');
-}
-
-function downloadFile(content, filename, contentType) {
-    const blob = new Blob([content], { type: contentType });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    const today = new Date().toLocaleDateString('ro-RO');
+    const now = new Date().toLocaleString('ro-RO');
+    
+    let yPos = 20;
+    
+    // Title
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('ORDIN DE PLATĂ', 105, yPos, { align: 'center' });
+    
+    yPos += 15;
+    doc.setLineWidth(0.5);
+    doc.line(20, yPos, 190, yPos);
+    
+    yPos += 10;
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    
+    // Număr ordin și data
+    doc.text(`Număr ordin: ${formData.numarProcesVerbal}`, 20, yPos);
+    doc.text(`Data emiterii: ${today}`, 120, yPos);
+    yPos += 10;
+    
+    // Plătitor
+    doc.setFont('helvetica', 'bold');
+    doc.text('PLĂTITOR:', 20, yPos);
+    yPos += 8;
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Nume: ${formData.nume} ${formData.prenume}`, 25, yPos);
+    yPos += 6;
+    doc.text(`CNP/CUI: ${formData.cnpSauCui}`, 25, yPos);
+    yPos += 6;
+    doc.text(`Email: ${formData.email || 'N/A'}`, 25, yPos);
+    yPos += 6;
+    doc.text(`Adresă: ${formData.adresaPostala}`, 25, yPos);
+    yPos += 6;
+    doc.text(`IBAN: ${formData.IBAN}`, 25, yPos);
+    yPos += 6;
+    doc.text(`Bancă (BIC): ${formData.bancaPlatitorului}`, 25, yPos);
+    yPos += 10;
+    
+    // Beneficiar
+    doc.setFont('helvetica', 'bold');
+    doc.text('BENEFICIAR:', 20, yPos);
+    yPos += 8;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Primăria Municipiului București - Serviciul Amenzi Parcare', 25, yPos);
+    yPos += 6;
+    doc.text('Cod Fiscal: 43210000', 25, yPos);
+    yPos += 6;
+    doc.text('IBAN: RO49BBBB1B31007593841111', 25, yPos);
+    yPos += 6;
+    doc.text('Bancă: BBBRO22', 25, yPos);
+    yPos += 10;
+    
+    // Detalii plată
+    doc.setFont('helvetica', 'bold');
+    doc.text('DETALII PLATĂ:', 20, yPos);
+    yPos += 8;
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Număr Proces Verbal: ${formData.numarProcesVerbal}`, 25, yPos);
+    yPos += 6;
+    doc.text(`Valoare Amenda Inițială: ${valoareAmendaInput.value} RON`, 25, yPos);
+    yPos += 6;
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Suma Totală de Plată: ${calculatedSum.toFixed(2)} RON`, 25, yPos);
+    yPos += 6;
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Descriere: ${formData.descrierePlata || 'Plată amendă parcare'}`, 25, yPos);
+    yPos += 10;
+    
+    // Footer
+    doc.line(20, yPos, 190, yPos);
+    yPos += 8;
+    doc.setFontSize(9);
+    doc.text(`Generat la: ${now}`, 20, yPos);
+    
+    // Save PDF
+    doc.save(`ordin_plata_PV${formData.numarProcesVerbal}.pdf`);
 }
 
 async function submitForm() {
@@ -277,7 +312,10 @@ async function submitForm() {
                 form.reset();
                 resetCalculations();
                 const today = new Date().toISOString().split('T')[0];
-                dataEmiteriiInput.value = today;
+                if (dataEmiteriiInput) {
+                    dataEmiteriiInput.value = today;
+                    dataEmiteriiInput.readOnly = true;
+                }
             }, 2000);
         } else {
             const errorData = await response.json().catch(() => ({ message: 'Eroare necunoscută' }));
@@ -317,8 +355,8 @@ function validateForm() {
         { input: ibanInput, errorId: 'iban-error', message: 'IBAN-ul este obligatoriu' },
         { input: bancaPlatitoruluiInput, errorId: 'bancaPlatitorului-error', message: 'Banca plătitorului este obligatorie' },
         { input: numarProcesVerbalInput, errorId: 'numarProcesVerbal-error', message: 'Numărul procesului verbal este obligatoriu' },
-        { input: valoareAmendaInput, errorId: null, message: 'Valoarea amenzii este obligatorie' },
-        { input: dataEmiteriiInput, errorId: 'dataEmiterii-error', message: 'Data emiterii este obligatorie' }
+        { input: valoareAmendaInput, errorId: null, message: 'Valoarea amenzii este obligatorie' }
+        // dataEmiterii este automată și readonly, nu trebuie validată
     ];
 
     requiredFields.forEach(({ input, errorId, message }) => {

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plata Amenda Parcare</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -132,7 +133,8 @@
 
                 <div class="form-group">
                     <label for="dataEmiterii">Data Emiterii Amenzii</label>
-                    <input type="date" id="dataEmiterii" name="dataEmiterii" required>
+                    <input type="date" id="dataEmiterii" name="dataEmiterii" readonly class="readonly">
+                    <span class="help-text">Data actuală - se setează automat</span>
                     <span class="error-message" id="dataEmiterii-error"></span>
                 </div>
 
@@ -173,7 +175,7 @@
 
             <div class="form-actions">
                 <button type="button" id="btnCalculeaza" class="btn btn-secondary">Calculează</button>
-                <button type="button" id="btnGenereazaOrdin" class="btn btn-secondary" disabled>Generează Ordin de Plată (TXT)</button>
+                <button type="button" id="btnGenereazaOrdin" class="btn btn-secondary" disabled>Generează Ordin de Plată (PDF)</button>
                 <button type="submit" id="btnSubmit" class="btn btn-primary" disabled>Trimite Formular</button>
             </div>
 

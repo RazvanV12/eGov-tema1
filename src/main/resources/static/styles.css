@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
     min-height: 100vh;
     padding: 20px;
     color: #333;
@@ -22,7 +22,7 @@ body {
 }
 
 header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #495057 0%, #343a40 100%);
     color: white;
     padding: 30px;
     text-align: center;
@@ -42,7 +42,7 @@ header h1 {
 .tabs {
     display: flex;
     background: #f8f9fa;
-    border-bottom: 2px solid #667eea;
+    border-bottom: 2px solid #6c757d;
     padding: 0;
     margin: 0;
 }
@@ -62,13 +62,13 @@ header h1 {
 
 .tab-btn:hover {
     background: #e9ecef;
-    color: #667eea;
+    color: #495057;
 }
 
 .tab-btn.active {
     background: white;
-    color: #667eea;
-    border-bottom-color: #667eea;
+    color: #495057;
+    border-bottom-color: #6c757d;
 }
 
 .tab-content {
@@ -94,11 +94,11 @@ header h1 {
 }
 
 .form-section h2 {
-    color: #667eea;
+    color: #495057;
     font-size: 20px;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #667eea;
+    border-bottom: 2px solid #6c757d;
 }
 
 .form-group {
@@ -129,7 +129,7 @@ header h1 {
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #6c757d;
 }
 
 .form-group input.readonly {
@@ -161,7 +161,7 @@ header h1 {
     background: #f8f9fa;
     padding: 20px;
     border-radius: 8px;
-    border: 2px solid #667eea;
+    border: 2px solid #6c757d;
 }
 
 .calculation-row {
@@ -177,7 +177,7 @@ header h1 {
 }
 
 .calculation-row.total {
-    border-top: 2px solid #667eea;
+    border-top: 2px solid #6c757d;
     margin-top: 10px;
     padding-top: 15px;
 }
@@ -189,17 +189,17 @@ header h1 {
 
 .amount {
     font-weight: 600;
-    color: #667eea;
+    color: #495057;
     font-size: 16px;
 }
 
 .total-amount {
     font-size: 24px;
-    color: #764ba2;
+    color: #343a40;
 }
 
 .highlight {
-    color: #667eea;
+    color: #495057;
     font-weight: 600;
 }
 
@@ -224,13 +224,13 @@ header h1 {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #495057 0%, #343a40 100%);
     color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgba(73, 80, 87, 0.4);
 }
 
 .btn-secondary {
