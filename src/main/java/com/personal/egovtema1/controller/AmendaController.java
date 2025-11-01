@@ -1,7 +1,6 @@
 package com.personal.egovtema1.controller;
 
 import com.personal.egovtema1.dto.request.AmendaDTO;
-import com.personal.egovtema1.entity.Amenda;
 import com.personal.egovtema1.service.AmendaService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,5 +18,14 @@ public class AmendaController {
     @PostMapping
     public ResponseEntity<?> creeazaAmenda(@Valid @RequestBody AmendaDTO amendaDTO) {
         return ResponseEntity.ok(amendaService.creeazaAmenda(amendaDTO));
+    }
+
+    @GetMapping("/pv/{numarPV}")
+    public ResponseEntity<?> getAmendaByProcesVerbal(@PathVariable Integer numarPV) {
+        try {
+            return ResponseEntity.ok(amendaService.gasesteDupaProcesVerbal(numarPV));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
