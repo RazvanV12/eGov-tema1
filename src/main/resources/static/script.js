@@ -425,3 +425,200 @@ function clearMessage() {
     messageDiv.style.display = 'none';
 }
 
+// ============================================
+// TAB MANAGEMENT
+// ============================================
+
+function showTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    if (tabName === 'creare') {
+        document.getElementById('creareAmendaForm').classList.add('active');
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    } else if (tabName === 'plata') {
+        document.getElementById('plataAmendaForm').classList.add('active');
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    }
+}
+
+// ============================================
+// CREARE AMENDA FORM
+// ============================================
+
+let creareAmendaForm;
+let btnCreeazaAmenda;
+let messageCreare;
+let nrInmatriculareMasinaInput;
+let zonaAmendaInput;
+let codAgentInput;
+let valoareAmendaCreareInput;
+
+// Initialize creare amenda form
+document.addEventListener('DOMContentLoaded', () => {
+    creareAmendaForm = document.getElementById('creareAmendaForm');
+    btnCreeazaAmenda = document.getElementById('btnCreeazaAmenda');
+    messageCreare = document.getElementById('messageCreare');
+    nrInmatriculareMasinaInput = document.getElementById('nrInmatriculareMasina');
+    zonaAmendaInput = document.getElementById('zonaAmenda');
+    codAgentInput = document.getElementById('codAgent');
+    valoareAmendaCreareInput = document.getElementById('valoareAmendaCreare');
+
+    if (creareAmendaForm && btnCreeazaAmenda) {
+        creareAmendaForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await creeazaAmenda();
+        });
+        
+        // Real-time validation
+        if (nrInmatriculareMasinaInput) {
+            nrInmatriculareMasinaInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                clearFieldError(e.target);
+            });
+        }
+        
+        if (valoareAmendaCreareInput) {
+            valoareAmendaCreareInput.addEventListener('input', () => {
+                clearFieldError(valoareAmendaCreareInput);
+            });
+        }
+    }
+});
+
+async function creeazaAmenda() {
+    if (!creareAmendaForm || !btnCreeazaAmenda || !nrInmatriculareMasinaInput || !zonaAmendaInput || !codAgentInput || !valoareAmendaCreareInput) {
+        console.error('Formularul de creare amenda nu este inițializat corect');
+        return;
+    }
+
+    if (!validateCreareAmendaForm()) {
+        showMessageCreare('Vă rugăm să completați toate câmpurile obligatorii corect', 'error');
+        return;
+    }
+
+    btnCreeazaAmenda.disabled = true;
+    btnCreeazaAmenda.textContent = 'Se creează...';
+
+    try {
+        const amendaData = {
+            nrInmatriculareMasina: nrInmatriculareMasinaInput.value.trim().toUpperCase(),
+            zona: zonaAmendaInput.value.trim(),
+            codAgent: codAgentInput.value.trim(),
+            valoareAmenda: parseInt(valoareAmendaCreareInput.value)
+        };
+
+        const response = await fetch(`${API_BASE_URL}/amenzi`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(amendaData)
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            showMessageCreare(
+                `Amenda a fost creată cu succes! Număr proces verbal: ${result.numarProcesVerbal}`,
+                'success'
+            );
+            
+            // Reset form after successful creation
+            setTimeout(() => {
+                resetCreareAmendaForm();
+            }, 2000);
+        } else {
+            const errorData = await response.json().catch(() => ({ message: 'Eroare necunoscută' }));
+            showMessageCreare(
+                'Eroare la crearea amenzi: ' + (errorData.message || errorData.error || 'Eroare necunoscută'),
+                'error'
+            );
+        }
+    } catch (error) {
+        showMessageCreare('Eroare de conexiune: ' + error.message, 'error');
+    } finally {
+        btnCreeazaAmenda.disabled = false;
+        btnCreeazaAmenda.textContent = 'Creează Amenda';
+    }
+}
+
+function validateCreareAmendaForm() {
+    if (!nrInmatriculareMasinaInput || !zonaAmendaInput || !codAgentInput || !valoareAmendaCreareInput) {
+        return false;
+    }
+
+    let isValid = true;
+    
+    // Validate nrInmatriculareMasina
+    const nrInmatricularePattern = /^(?:[A-Z]{2}\d{2}[A-Z]{3}|B\d{2,3}[A-Z]{3})$/;
+    if (!nrInmatriculareMasinaInput.value.trim()) {
+        showFieldError(nrInmatriculareMasinaInput, 'Numărul de înmatriculare este obligatoriu');
+        isValid = false;
+    } else if (!nrInmatricularePattern.test(nrInmatriculareMasinaInput.value.trim().toUpperCase())) {
+        showFieldError(nrInmatriculareMasinaInput, 'Format invalid. Format acceptat: B123ABC sau AB12ABC');
+        isValid = false;
+    }
+
+    // Validate zona
+    if (!zonaAmendaInput.value.trim()) {
+        showFieldError(zonaAmendaInput, 'Zona este obligatorie');
+        isValid = false;
+    }
+
+    // Validate codAgent
+    if (!codAgentInput.value.trim()) {
+        showFieldError(codAgentInput, 'Codul agentului este obligatoriu');
+        isValid = false;
+    }
+
+    // Validate valoareAmenda
+    const valoare = parseInt(valoareAmendaCreareInput.value);
+    if (!valoareAmendaCreareInput.value || isNaN(valoare) || valoare <= 0) {
+        showFieldError(valoareAmendaCreareInput, 'Valoarea amenzii trebuie să fie un număr pozitiv');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function resetCreareAmendaForm() {
+    if (creareAmendaForm) {
+        creareAmendaForm.reset();
+    }
+    clearMessageCreare();
+    
+    // Clear all field errors
+    if (nrInmatriculareMasinaInput) clearFieldError(nrInmatriculareMasinaInput);
+    if (zonaAmendaInput) clearFieldError(zonaAmendaInput);
+    if (codAgentInput) clearFieldError(codAgentInput);
+    if (valoareAmendaCreareInput) clearFieldError(valoareAmendaCreareInput);
+}
+
+function showMessageCreare(message, type) {
+    if (!messageCreare) return;
+    
+    messageCreare.textContent = message;
+    messageCreare.className = `message ${type}`;
+    
+    if (type === 'info') {
+        messageCreare.style.display = 'block';
+        messageCreare.style.backgroundColor = '#d1ecf1';
+        messageCreare.style.color = '#0c5460';
+        messageCreare.style.border = '1px solid #bee5eb';
+    }
+}
+
+function clearMessageCreare() {
+    if (messageCreare) {
+        messageCreare.style.display = 'none';
+    }
+}
+

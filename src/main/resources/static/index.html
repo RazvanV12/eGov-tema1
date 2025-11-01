@@ -13,7 +13,57 @@
             <p class="subtitle">Primăria Municipiului București - Serviciul Amenzi Parcare</p>
         </header>
 
-        <form id="plataAmendaForm" class="form-container">
+        <!-- Navigation tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('creare')">Creare Amenda</button>
+            <button class="tab-btn" onclick="showTab('plata')">Plată Amenda</button>
+        </div>
+
+        <!-- Formular Creare Amenda -->
+        <form id="creareAmendaForm" class="form-container tab-content active">
+            <div class="form-section">
+                <h2>Creare Amenda Nouă</h2>
+                
+                <div class="form-group">
+                    <label for="nrInmatriculareMasina">Număr Înmatriculare Mașină <span class="required">*</span></label>
+                    <input type="text" id="nrInmatriculareMasina" name="nrInmatriculareMasina" 
+                           placeholder="B123ABC sau AB12ABC" 
+                           pattern="^[A-Z]{2}\d{2}[A-Z]{3}|B\d{2,3}[A-Z]{3}$" 
+                           required>
+                    <span class="help-text">Format: B123ABC sau AB12ABC</span>
+                    <span class="error-message" id="nrInmatriculareMasina-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="zonaAmenda">Zona <span class="required">*</span></label>
+                    <input type="text" id="zonaAmenda" name="zonaAmenda" required>
+                    <span class="error-message" id="zonaAmenda-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="codAgent">Cod Agent <span class="required">*</span></label>
+                    <input type="text" id="codAgent" name="codAgent" required>
+                    <span class="error-message" id="codAgent-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="valoareAmendaCreare">Valoare Amenda (RON) <span class="required">*</span></label>
+                    <input type="number" id="valoareAmendaCreare" name="valoareAmendaCreare" 
+                           min="1" step="1" required>
+                    <span class="error-message" id="valoareAmendaCreare-error"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="btnCreeazaAmenda" class="btn btn-primary">Creează Amenda</button>
+                    <button type="button" onclick="resetCreareAmendaForm()" class="btn btn-secondary">Resetează</button>
+                </div>
+
+                <div id="messageCreare" class="message"></div>
+            </div>
+        </form>
+
+        <!-- Formular Plata Amenda -->
+        <form id="plataAmendaForm" class="form-container tab-content">
             <div class="form-section">
                 <h2>Date Persoane Fizice/Juridice</h2>
                 
