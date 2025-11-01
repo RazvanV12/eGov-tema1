@@ -36,6 +36,7 @@ public class DataInitConfig {
                                       PlataAmendaRepository plataAmendaRepository) {
         return args -> {
 
+            // Creează o amenda de test
             Amenda am = new Amenda();
             am.setNumarProcesVerbal(12345);
             am.setNrInmatriculareMasina("B12ABC");
@@ -45,31 +46,25 @@ public class DataInitConfig {
             am.setValoareAmenda(200);
             amendaRepository.save(am);
 
-
-            PlataAmenda pa = new PlataAmenda();
-            pa.setNume("Popescu");
-            pa.setPrenume("Ion");
-            pa.setCnpSauCui("1234567890123");
-            pa.setEmail("ion.popescu@example.com");
-            pa.setAdresaPostala("Strada Exemplu 1, Bucuresti");
-            pa.setNumarProcesVerbal(12345);
-            pa.setIBAN("RO49AAAA1B31007593840000");
-            pa.setBancaPlatitorului("Banca Exemplu S.A.");
-            pa.setDescrierePlata("Plata contraventiei parcare");
-            pa.setDataCompletarii(LocalDateTime.now());
-            plataAmendaRepository.save(pa);
-
-            plataAmendaService.crearePlataAmenda(PlataAmendaDTO.builder()
-                    .nume("Popescu")
-                    .prenume("Ion")
-                    .cnpSauCui("1234567890123")
-                    .email("ion.popescu@example.com")
-                    .adresaPostala("Strada Exemplu 1, Bucuresti")
-                    .descrierePlata("Plata contraventiei parcare")
-                    .IBAN("RO49AAAA1B31007593840000")
-                    .numarProcesVerbal(12345)
-                    .bancaPlatitorului("Banca Exemplu S.A.")
-                    .build());
+            // NU mai creăm PlataAmenda manual - service-ul o creează automat
+            // Creează doar prin service pentru a evita duplicatele
+            // (service-ul generează și ordinul XML)
+            try {
+                plataAmendaService.crearePlataAmenda(PlataAmendaDTO.builder()
+                        .nume("Popescu")
+                        .prenume("Ion")
+                        .cnpSauCui("1234567890123")
+                        .email("ion.popescu@example.com")
+                        .adresaPostala("Strada Exemplu 1, Bucuresti")
+                        .descrierePlata("Plata contraventiei parcare")
+                        .IBAN("RO49AAAA1B31007593840000")
+                        .numarProcesVerbal(12345)
+                        .bancaPlatitorului("Banca Exemplu S.A.")
+                        .build());
+            } catch (Exception e) {
+                // Ignoră erori dacă deja există
+                System.out.println("Amenda de test deja există sau eroare: " + e.getMessage());
+            }
         };
     }
 }
