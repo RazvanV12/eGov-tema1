@@ -37,7 +37,6 @@ public class PlataAmendaDTO {
     @NotBlank(message = "Adresa poștală este obligatorie")
     private String adresaPostala;
 
-    @NotBlank(message = "IBAN-ul este obligatoriu")
     private String IBAN;
 
     @NotBlank(message = "Banca plătitorului (BIC) este obligatorie")
