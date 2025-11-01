@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    background: linear-gradient(135deg, #d4a574 0%, #c9a982 100%);
     min-height: 100vh;
     padding: 20px;
     color: #333;
@@ -22,7 +22,7 @@ body {
 }
 
 header {
-    background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+    background: linear-gradient(135deg, #8b6f47 0%, #6b5737 100%);
     color: white;
     padding: 30px;
     text-align: center;
@@ -41,8 +41,8 @@ header h1 {
 /* Tabs styling */
 .tabs {
     display: flex;
-    background: #f8f9fa;
-    border-bottom: 2px solid #6c757d;
+    background: #f5e6d3;
+    border-bottom: 2px solid #c9a982;
     padding: 0;
     margin: 0;
 }
@@ -61,14 +61,14 @@ header h1 {
 }
 
 .tab-btn:hover {
-    background: #e9ecef;
-    color: #495057;
+    background: #e8d5b7;
+    color: #8b6f47;
 }
 
 .tab-btn.active {
     background: white;
-    color: #495057;
-    border-bottom-color: #6c757d;
+    color: #8b6f47;
+    border-bottom-color: #c9a982;
 }
 
 .tab-content {
@@ -94,11 +94,11 @@ header h1 {
 }
 
 .form-section h2 {
-    color: #495057;
+    color: #8b6f47;
     font-size: 20px;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #6c757d;
+    border-bottom: 2px solid #c9a982;
 }
 
 .form-group {
@@ -129,7 +129,7 @@ header h1 {
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #6c757d;
+    border-color: #c9a982;
 }
 
 .form-group input.readonly {
@@ -158,10 +158,10 @@ header h1 {
 }
 
 .calculation-section {
-    background: #f8f9fa;
+    background: #f5e6d3;
     padding: 20px;
     border-radius: 8px;
-    border: 2px solid #6c757d;
+    border: 2px solid #c9a982;
 }
 
 .calculation-row {
@@ -177,7 +177,7 @@ header h1 {
 }
 
 .calculation-row.total {
-    border-top: 2px solid #6c757d;
+    border-top: 2px solid #c9a982;
     margin-top: 10px;
     padding-top: 15px;
 }
@@ -189,17 +189,17 @@ header h1 {
 
 .amount {
     font-weight: 600;
-    color: #495057;
+    color: #8b6f47;
     font-size: 16px;
 }
 
 .total-amount {
     font-size: 24px;
-    color: #343a40;
+    color: #6b5737;
 }
 
 .highlight {
-    color: #495057;
+    color: #8b6f47;
     font-weight: 600;
 }
 
@@ -224,22 +224,22 @@ header h1 {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+    background: linear-gradient(135deg, #8b6f47 0%, #6b5737 100%);
     color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(73, 80, 87, 0.4);
+    box-shadow: 0 5px 15px rgba(139, 111, 71, 0.4);
 }
 
 .btn-secondary {
-    background: #6c757d;
+    background: #c9a982;
     color: white;
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background: #5a6268;
+    background: #8b6f47;
     transform: translateY(-2px);
 }
 

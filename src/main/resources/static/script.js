@@ -190,6 +190,19 @@ function generatePaymentOrder() {
     showMessage('Ordinul de plată a fost generat cu succes!', 'success');
 }
 
+// Functie pentru eliminarea diacriticelor
+function removeDiacritics(text) {
+    if (!text) return '';
+    const diacritics = {
+        'ă': 'a', 'Ă': 'A',
+        'â': 'a', 'Â': 'A',
+        'î': 'i', 'Î': 'I',
+        'ș': 's', 'Ș': 'S',
+        'ț': 't', 'Ț': 'T'
+    };
+    return text.replace(/[ăĂâÂîÎșȘțȚ]/g, char => diacritics[char] || char);
+}
+
 function generatePaymentOrderPdf(formData) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -199,10 +212,10 @@ function generatePaymentOrderPdf(formData) {
     
     let yPos = 20;
     
-    // Title
+    // Title (fara diacritice)
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.text('ORDIN DE PLATĂ', 105, yPos, { align: 'center' });
+    doc.text('ORDIN DE PLATA', 105, yPos, { align: 'center' });
     
     yPos += 15;
     doc.setLineWidth(0.5);
@@ -213,56 +226,57 @@ function generatePaymentOrderPdf(formData) {
     doc.setFont('helvetica', 'normal');
     
     // Număr ordin și data
-    doc.text(`Număr ordin: ${formData.numarProcesVerbal}`, 20, yPos);
+    doc.text(`Numar ordin: ${formData.numarProcesVerbal}`, 20, yPos);
     doc.text(`Data emiterii: ${today}`, 120, yPos);
     yPos += 10;
     
-    // Plătitor
+    // Platitor (fara diacritice)
     doc.setFont('helvetica', 'bold');
-    doc.text('PLĂTITOR:', 20, yPos);
+    doc.text('PLATITOR:', 20, yPos);
     yPos += 8;
     doc.setFont('helvetica', 'normal');
-    doc.text(`Nume: ${formData.nume} ${formData.prenume}`, 25, yPos);
+    doc.text(`Nume: ${removeDiacritics(formData.nume)} ${removeDiacritics(formData.prenume)}`, 25, yPos);
     yPos += 6;
     doc.text(`CNP/CUI: ${formData.cnpSauCui}`, 25, yPos);
     yPos += 6;
     doc.text(`Email: ${formData.email || 'N/A'}`, 25, yPos);
     yPos += 6;
-    doc.text(`Adresă: ${formData.adresaPostala}`, 25, yPos);
+    doc.text(`Adresa: ${removeDiacritics(formData.adresaPostala)}`, 25, yPos);
     yPos += 6;
     doc.text(`IBAN: ${formData.IBAN}`, 25, yPos);
     yPos += 6;
-    doc.text(`Bancă (BIC): ${formData.bancaPlatitorului}`, 25, yPos);
+    doc.text(`Banca (BIC): ${removeDiacritics(formData.bancaPlatitorului)}`, 25, yPos);
     yPos += 10;
     
-    // Beneficiar
+    // Beneficiar (fara diacritice)
     doc.setFont('helvetica', 'bold');
     doc.text('BENEFICIAR:', 20, yPos);
     yPos += 8;
     doc.setFont('helvetica', 'normal');
-    doc.text('Primăria Municipiului București - Serviciul Amenzi Parcare', 25, yPos);
+    doc.text('Primaria Municipiului Bucuresti - Serviciul Amenzi Parcare', 25, yPos);
     yPos += 6;
     doc.text('Cod Fiscal: 43210000', 25, yPos);
     yPos += 6;
     doc.text('IBAN: RO49BBBB1B31007593841111', 25, yPos);
     yPos += 6;
-    doc.text('Bancă: BBBRO22', 25, yPos);
+    doc.text('Banca: BBBRO22', 25, yPos);
     yPos += 10;
     
-    // Detalii plată
+    // Detalii plata (fara diacritice)
     doc.setFont('helvetica', 'bold');
-    doc.text('DETALII PLATĂ:', 20, yPos);
+    doc.text('DETALII PLATA:', 20, yPos);
     yPos += 8;
     doc.setFont('helvetica', 'normal');
-    doc.text(`Număr Proces Verbal: ${formData.numarProcesVerbal}`, 25, yPos);
+    doc.text(`Numar Proces Verbal: ${formData.numarProcesVerbal}`, 25, yPos);
     yPos += 6;
-    doc.text(`Valoare Amenda Inițială: ${valoareAmendaInput.value} RON`, 25, yPos);
+    doc.text(`Valoare Amenda Initiala: ${valoareAmendaInput.value} RON`, 25, yPos);
     yPos += 6;
     doc.setFont('helvetica', 'bold');
-    doc.text(`Suma Totală de Plată: ${calculatedSum.toFixed(2)} RON`, 25, yPos);
+    doc.text(`Suma Totala de Plata: ${calculatedSum.toFixed(2)} RON`, 25, yPos);
     yPos += 6;
     doc.setFont('helvetica', 'normal');
-    doc.text(`Descriere: ${formData.descrierePlata || 'Plată amendă parcare'}`, 25, yPos);
+    const descriere = formData.descrierePlata || 'Plata amenda parcare';
+    doc.text(`Descriere: ${removeDiacritics(descriere)}`, 25, yPos);
     yPos += 10;
     
     // Footer
