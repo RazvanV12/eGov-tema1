@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plata Amenda Parcare</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Formular Electronic - Plata Amenda Parcare</h1>
+            <p class="subtitle">Primăria Municipiului București - Serviciul Amenzi Parcare</p>
+        </header>
+
+        <!-- Navigation tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('creare')">Creare Amenda</button>
+            <button class="tab-btn" onclick="showTab('plata')">Plată Amenda</button>
+        </div>
+
+        <!-- Formular Creare Amenda -->
+        <form id="creareAmendaForm" class="form-container tab-content active">
+            <div class="form-section">
+                <h2>Creare Amenda Nouă</h2>
+                
+                <div class="form-group">
+                    <label for="nrInmatriculareMasina">Număr Înmatriculare Mașină <span class="required">*</span></label>
+                    <input type="text" id="nrInmatriculareMasina" name="nrInmatriculareMasina" 
+                           placeholder="B123ABC sau AB12ABC" 
+                           pattern="^[A-Z]{2}\d{2}[A-Z]{3}|B\d{2,3}[A-Z]{3}$" 
+                           required>
+                    <span class="help-text">Format: B123ABC sau AB12ABC</span>
+                    <span class="error-message" id="nrInmatriculareMasina-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="zonaAmenda">Zona <span class="required">*</span></label>
+                    <input type="text" id="zonaAmenda" name="zonaAmenda" required>
+                    <span class="error-message" id="zonaAmenda-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="codAgent">Cod Agent <span class="required">*</span></label>
+                    <input type="text" id="codAgent" name="codAgent" required>
+                    <span class="error-message" id="codAgent-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="valoareAmendaCreare">Valoare Amenda (RON) <span class="required">*</span></label>
+                    <input type="number" id="valoareAmendaCreare" name="valoareAmendaCreare" 
+                           min="1" step="1" required>
+                    <span class="error-message" id="valoareAmendaCreare-error"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="btnCreeazaAmenda" class="btn btn-primary">Creează Amenda</button>
+                    <button type="button" onclick="resetCreareAmendaForm()" class="btn btn-secondary">Resetează</button>
+                </div>
+
+                <div id="messageCreare" class="message"></div>
+            </div>
+        </form>
+
+        <!-- Formular Plata Amenda -->
+        <form id="plataAmendaForm" class="form-container tab-content">
+            <div class="form-section">
+                <h2>Date Persoane Fizice/Juridice</h2>
+                
+                <div class="form-group">
+                    <label for="nume">Nume <span class="required">*</span></label>
+                    <input type="text" id="nume" name="nume" required>
+                    <span class="error-message" id="nume-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="prenume">Prenume <span class="required">*</span></label>
+                    <input type="text" id="prenume" name="prenume" required>
+                    <span class="error-message" id="prenume-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="cnpSauCui">CNP/CUI <span class="required">*</span></label>
+                    <input type="text" id="cnpSauCui" name="cnpSauCui" maxlength="13" pattern="\d{13}" required>
+                    <span class="help-text">13 cifre</span>
+                    <span class="error-message" id="cnpSauCui-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email">
+                    <span class="error-message" id="email-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="adresaPostala">Adresă Poștală <span class="required">*</span></label>
+                    <textarea id="adresaPostala" name="adresaPostala" rows="3" required></textarea>
+                    <span class="error-message" id="adresaPostala-error"></span>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Date Bancare</h2>
+                
+                <div class="form-group">
+                    <label for="iban">IBAN <span class="required">*</span></label>
+                    <input type="text" id="iban" name="iban" placeholder="RO49..." required>
+                    <span class="error-message" id="iban-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="bancaPlatitorului">Banca Plătitorului (BIC) <span class="required">*</span></label>
+                    <input type="text" id="bancaPlatitorului" name="bancaPlatitorului" required>
+                    <span class="error-message" id="bancaPlatitorului-error"></span>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Detalii Amenda</h2>
+                
+                <div class="form-group">
+                    <label for="numarProcesVerbal">Număr Proces Verbal <span class="required">*</span></label>
+                    <input type="number" id="numarProcesVerbal" name="numarProcesVerbal" min="1" required>
+                    <span class="error-message" id="numarProcesVerbal-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="valoareAmenda">Valoare Amenda (RON)</label>
+                    <input type="number" id="valoareAmenda" name="valoareAmenda" readonly class="readonly">
+                    <span class="help-text">Se calculează automat după introducerea numărului proces verbal</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="dataEmiterii">Data Emiterii Amenzii</label>
+                    <input type="date" id="dataEmiterii" name="dataEmiterii" readonly class="readonly">
+                    <span class="help-text">Data actuală - se setează automat</span>
+                    <span class="error-message" id="dataEmiterii-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="descrierePlata">Descriere Plată</label>
+                    <textarea id="descrierePlata" name="descrierePlata" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="form-section calculation-section">
+                <h2>Calculul Sumelor</h2>
+                
+                <div class="calculation-row">
+                    <label>Valoare Amenda Inițială:</label>
+                    <span id="valoareInitiata" class="amount">0.00 RON</span>
+                </div>
+                
+                <div class="calculation-row">
+                    <label>Zile de la Emitere:</label>
+                    <span id="zileScurse">0 zile</span>
+                </div>
+
+                <div class="calculation-row">
+                    <label>Tip Calcul:</label>
+                    <span id="tipCalcul" class="highlight">-</span>
+                </div>
+
+                <div class="calculation-row">
+                    <label>Reducere/Penalitate:</label>
+                    <span id="reducerePenalitate" class="amount">0.00 RON</span>
+                </div>
+
+                <div class="calculation-row total">
+                    <label><strong>Suma Totală de Plată:</strong></label>
+                    <span id="sumaTotala" class="amount total-amount">0.00 RON</span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="btnCalculeaza" class="btn btn-secondary">Calculează</button>
+                <button type="button" id="btnGenereazaOrdin" class="btn btn-secondary" disabled>Generează Ordin de Plată (PDF)</button>
+                <button type="submit" id="btnSubmit" class="btn btn-primary" disabled>Trimite Formular</button>
+            </div>
+
+            <div id="message" class="message"></div>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
