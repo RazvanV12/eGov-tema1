@@ -11,13 +11,12 @@
     <div class="container">
         <header>
             <h1>Formular Electronic - Plata Amenda Parcare</h1>
-            <p class="subtitle">Primăria Municipiului București - Serviciul Amenzi Parcare</p>
+            <p class="subtitle">Primaria Municipiului București - Serviciul Amenzi Parcare</p>
         </header>
 
-        <!-- Navigation tabs -->
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('creare')">Creare Amenda</button>
-            <button class="tab-btn" onclick="showTab('plata')">Plată Amenda</button>
+            <button class="tab-btn" onclick="showTab('plata')">Plata Amenda</button>
         </div>
 
         <!-- Formular Creare Amenda -->
@@ -26,7 +25,7 @@
                 <h2>Creare Amenda Nouă</h2>
                 
                 <div class="form-group">
-                    <label for="nrInmatriculareMasina">Număr Înmatriculare Mașină <span class="required">*</span></label>
+                    <label for="nrInmatriculareMasina">Numar Inmatriculare Masina <span class="required">*</span></label>
                     <input type="text" id="nrInmatriculareMasina" name="nrInmatriculareMasina" 
                            placeholder="B123ABC sau AB12ABC" 
                            pattern="^[A-Z]{2}\d{2}[A-Z]{3}|B\d{2,3}[A-Z]{3}$" 
@@ -88,13 +87,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Email</label>
+                    <label for="email">Email <span class="required">*</span></label>
                     <input type="email" id="email" name="email">
                     <span class="error-message" id="email-error"></span>
                 </div>
 
                 <div class="form-group">
-                    <label for="adresaPostala">Adresă Poștală <span class="required">*</span></label>
+                    <label for="adresaPostala">Adresa Postala <span class="required">*</span></label>
                     <textarea id="adresaPostala" name="adresaPostala" rows="3" required></textarea>
                     <span class="error-message" id="adresaPostala-error"></span>
                 </div>
@@ -110,7 +109,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="bancaPlatitorului">Banca Plătitorului (BIC) <span class="required">*</span></label>
+                    <label for="bancaPlatitorului">Banca Platitorului (BIC) <span class="required">*</span></label>
                     <input type="text" id="bancaPlatitorului" name="bancaPlatitorului" required>
                     <span class="error-message" id="bancaPlatitorului-error"></span>
                 </div>
@@ -120,7 +119,7 @@
                 <h2>Detalii Amenda</h2>
                 
                 <div class="form-group">
-                    <label for="numarProcesVerbal">Număr Proces Verbal <span class="required">*</span></label>
+                    <label for="numarProcesVerbal">Numar Proces Verbal <span class="required">*</span></label>
                     <input type="number" id="numarProcesVerbal" name="numarProcesVerbal" min="1" required>
                     <span class="error-message" id="numarProcesVerbal-error"></span>
                 </div>
@@ -134,7 +133,7 @@
                 <div class="form-group">
                     <label for="dataEmiterii">Data Emiterii Amenzii</label>
                     <input type="date" id="dataEmiterii" name="dataEmiterii" readonly class="readonly">
-                    <span class="help-text">Data actuală - se setează automat</span>
+                    <span class="help-text">Data actuala - se seteaza automat</span>
                     <span class="error-message" id="dataEmiterii-error"></span>
                 </div>
 
@@ -148,7 +147,7 @@
                 <h2>Calculul Sumelor</h2>
                 
                 <div class="calculation-row">
-                    <label>Valoare Amenda Inițială:</label>
+                    <label>Valoare Amenda Initiala:</label>
                     <span id="valoareInitiata" class="amount">0.00 RON</span>
                 </div>
                 
@@ -168,14 +167,14 @@
                 </div>
 
                 <div class="calculation-row total">
-                    <label><strong>Suma Totală de Plată:</strong></label>
+                    <label><strong>Suma Totala de Plata:</strong></label>
                     <span id="sumaTotala" class="amount total-amount">0.00 RON</span>
                 </div>
             </div>
 
             <div class="form-actions">
-                <button type="button" id="btnCalculeaza" class="btn btn-secondary">Calculează</button>
-                <button type="button" id="btnGenereazaOrdin" class="btn btn-secondary" disabled>Generează Ordin de Plată (PDF)</button>
+                <button type="button" id="btnCalculeaza" class="btn btn-secondary">Calculeaza</button>
+                <button type="button" id="btnGenereazaOrdin" class="btn btn-secondary" disabled>Genereaza Ordin de Plata (PDF)</button>
                 <button type="submit" id="btnSubmit" class="btn btn-primary" disabled>Trimite Formular</button>
             </div>
 

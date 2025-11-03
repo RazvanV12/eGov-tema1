@@ -36,8 +36,7 @@ let calculatedSum = 0;
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     setupValidation();
-    
-    // Set today's date as default for data emiterii (readonly)
+
     const today = new Date().toISOString().split('T')[0];
     if (dataEmiteriiInput) {
         dataEmiteriiInput.value = today;
@@ -46,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
-    // When proces verbal number is entered, try to fetch amenda
+
     numarProcesVerbalInput.addEventListener('blur', async () => {
         const numarPV = numarProcesVerbalInput.value;
         if (numarPV && numarPV > 0) {
@@ -54,23 +53,19 @@ function setupEventListeners() {
         }
     });
 
-    // Calculate button
     btnCalculeaza.addEventListener('click', () => {
         calculateAmounts();
     });
 
-    // Generate payment order button
     btnGenereazaOrdin.addEventListener('click', () => {
         generatePaymentOrder();
     });
 
-    // Form submit
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         await submitForm();
     });
 
-    // Real-time validation
     const inputs = form.querySelectorAll('input, textarea');
     inputs.forEach(input => {
         input.addEventListener('blur', () => validateField(input));
@@ -79,12 +74,11 @@ function setupEventListeners() {
 }
 
 function setupValidation() {
-    // CNP validation - only numbers, exactly 13 digits
+
     cnpSauCuiInput.addEventListener('input', (e) => {
         e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13);
     });
 
-    // IBAN validation - format RO
     ibanInput.addEventListener('input', (e) => {
         let value = e.target.value.toUpperCase().replace(/\s/g, '');
         e.target.value = value;
@@ -93,7 +87,7 @@ function setupValidation() {
 
 async function loadAmendaByPV(numarPV) {
     try {
-        showMessage('Se încarcă datele amenzii...', 'info');
+        showMessage('Se încarca datele amenzii...', 'info');
         
         const response = await fetch(`${API_BASE_URL}/amenzi/pv/${numarPV}`);
         if (response.ok) {
@@ -108,13 +102,12 @@ async function loadAmendaByPV(numarPV) {
             enableCalculateButton();
         } else {
             const errorMessage = await response.text();
-            showMessage('Amenda nu a fost găsită pentru proces verbal ' + numarPV + ': ' + errorMessage, 'error');
-            // Still enable calculate button so user can enter manually
+            showMessage('Amenda nu a fost gasita pentru proces verbal ' + numarPV + ': ' + errorMessage, 'error');
             enableCalculateButton();
         }
     } catch (error) {
-        showMessage('Eroare la încărcarea datelor amenzii: ' + error.message, 'error');
-        // Still enable calculate button so user can enter manually
+        showMessage('Eroare la incarcarea datelor amenzii: ' + error.message, 'error');
+
         enableCalculateButton();
     }
 }
@@ -124,11 +117,10 @@ function calculateAmounts() {
     const dataEmiterii = dataEmiteriiInput.value;
     
     if (!valoareAmenda || !dataEmiterii) {
-        showMessage('Vă rugăm să introduceți valoarea amenzii și data emiterii', 'error');
+        showMessage('Va rugam sa introduceți valoarea amenzii si data emiterii', 'error');
         return;
     }
 
-    // Calculate days since emission
     const dataEmiteriiDate = new Date(dataEmiterii);
     const dataCompletariiDate = new Date();
     const diffTime = Math.abs(dataCompletariiDate - dataEmiteriiDate);
@@ -138,22 +130,20 @@ function calculateAmounts() {
     let tipCalcul = '';
     let reducerePenalitate = 0;
 
-    // Logic from PlataAmendaService
     if (diffDays <= 30) {
         // 50% reduction if paid within 30 days
         sumaTotala = Math.round(valoareAmenda / 2.0);
-        tipCalcul = 'Reducere 50% (plătit în termen de 30 zile)';
+        tipCalcul = 'Reducere 50% (platit in termen de 30 zile)';
         reducerePenalitate = valoareAmenda - sumaTotala;
     } else {
         // Penalty: 1% per month of delay after 30 days
         const luniIntarziere = Math.max(0, Math.floor((diffDays - 30) / 30));
         const procent = 1.0 * luniIntarziere;
         sumaTotala = Math.round(valoareAmenda * (1 + procent / 100.0));
-        tipCalcul = `Penalitate ${procent}% (${luniIntarziere} luni întârziere)`;
+        tipCalcul = `Penalitate ${procent}% (${luniIntarziere} luni intarziere)`;
         reducerePenalitate = sumaTotala - valoareAmenda;
     }
 
-    // Update display
     valoareInitiataSpan.textContent = valoareAmenda.toFixed(2) + ' RON';
     zileScurseSpan.textContent = diffDays + ' zile';
     tipCalculSpan.textContent = tipCalcul;
@@ -169,7 +159,6 @@ function calculateAmounts() {
     sumaTotalaSpan.textContent = sumaTotala.toFixed(2) + ' RON';
     calculatedSum = sumaTotala;
 
-    // Enable buttons
     btnGenereazaOrdin.disabled = false;
     enableSubmitButton();
     
@@ -178,19 +167,17 @@ function calculateAmounts() {
 
 function generatePaymentOrder() {
     if (!form.checkValidity()) {
-        showMessage('Vă rugăm să completați toate câmpurile obligatorii', 'error');
+        showMessage('Va rugam sa completați toate campurile obligatorii', 'error');
         return;
     }
 
     const formData = collectFormData();
-    
-    // Generate PDF payment order
+
     generatePaymentOrderPdf(formData);
     
-    showMessage('Ordinul de plată a fost generat cu succes!', 'success');
+    showMessage('Ordinul de plata a fost generat cu succes!', 'success');
 }
 
-// Functie pentru eliminarea diacriticelor
 function removeDiacritics(text) {
     if (!text) return '';
     const diacritics = {
@@ -211,8 +198,7 @@ function generatePaymentOrderPdf(formData) {
     const now = new Date().toLocaleString('ro-RO');
     
     let yPos = 20;
-    
-    // Title (fara diacritice)
+
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
     doc.text('ORDIN DE PLATA', 105, yPos, { align: 'center' });
@@ -224,13 +210,12 @@ function generatePaymentOrderPdf(formData) {
     yPos += 10;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
-    
-    // Număr ordin și data
+
     doc.text(`Numar ordin: ${formData.numarProcesVerbal}`, 20, yPos);
     doc.text(`Data emiterii: ${today}`, 120, yPos);
     yPos += 10;
-    
-    // Platitor (fara diacritice)
+
+    // Platitor
     doc.setFont('helvetica', 'bold');
     doc.text('PLATITOR:', 20, yPos);
     yPos += 8;
@@ -248,7 +233,7 @@ function generatePaymentOrderPdf(formData) {
     doc.text(`Banca (BIC): ${removeDiacritics(formData.bancaPlatitorului)}`, 25, yPos);
     yPos += 10;
     
-    // Beneficiar (fara diacritice)
+    // Beneficiar
     doc.setFont('helvetica', 'bold');
     doc.text('BENEFICIAR:', 20, yPos);
     yPos += 8;
@@ -262,7 +247,7 @@ function generatePaymentOrderPdf(formData) {
     doc.text('Banca: BBBRO22', 25, yPos);
     yPos += 10;
     
-    // Detalii plata (fara diacritice)
+    // Detalii plata
     doc.setFont('helvetica', 'bold');
     doc.text('DETALII PLATA:', 20, yPos);
     yPos += 8;
@@ -291,12 +276,12 @@ function generatePaymentOrderPdf(formData) {
 
 async function submitForm() {
     if (!validateForm()) {
-        showMessage('Vă rugăm să corectați erorile din formular', 'error');
+        showMessage('Va rugam sa corectați erorile din formular', 'error');
         return;
     }
 
     if (calculatedSum === 0) {
-        showMessage('Vă rugăm să calculați mai întâi suma de plată', 'error');
+        showMessage('Va rugam sa calculați mai intai suma de plata', 'error');
         return;
     }
 
@@ -316,12 +301,10 @@ async function submitForm() {
 
         if (response.ok) {
             const result = await response.json();
-            showMessage('Formularul a fost trimis cu succes! Datele au fost înregistrate și ordinul de plată XML a fost generat.', 'success');
-            
-            // Generate and download payment order
+            showMessage('Formularul a fost trimis cu succes! Datele au fost inregistrate si ordinul de plata XML a fost generat.', 'success');
+
             generatePaymentOrder();
-            
-            // Reset form after successful submission
+
             setTimeout(() => {
                 form.reset();
                 resetCalculations();
@@ -330,10 +313,10 @@ async function submitForm() {
                     dataEmiteriiInput.value = today;
                     dataEmiteriiInput.readOnly = true;
                 }
-            }, 2000);
+            }, 20000);
         } else {
-            const errorData = await response.json().catch(() => ({ message: 'Eroare necunoscută' }));
-            showMessage('Eroare la trimiterea formularului: ' + (errorData.message || errorData.error || 'Eroare necunoscută'), 'error');
+            const errorData = await response.json().catch(() => ({ message: 'Eroare necunoscuta' }));
+            showMessage('Eroare la trimiterea formularului: ' + (errorData.message || errorData.error || 'Eroare necunoscuta'), 'error');
         }
     } catch (error) {
         showMessage('Eroare de conexiune: ' + error.message, 'error');
@@ -359,18 +342,16 @@ function collectFormData() {
 
 function validateForm() {
     let isValid = true;
-    
-    // Validate all required fields
+
     const requiredFields = [
         { input: numeInput, errorId: 'nume-error', message: 'Numele este obligatoriu' },
         { input: prenumeInput, errorId: 'prenume-error', message: 'Prenumele este obligatoriu' },
         { input: cnpSauCuiInput, errorId: 'cnpSauCui-error', message: 'CNP/CUI este obligatoriu (13 cifre)' },
-        { input: adresaPostalaInput, errorId: 'adresaPostala-error', message: 'Adresa poștală este obligatorie' },
+        { input: adresaPostalaInput, errorId: 'adresaPostala-error', message: 'Adresa poștala este obligatorie' },
         { input: ibanInput, errorId: 'iban-error', message: 'IBAN-ul este obligatoriu' },
-        { input: bancaPlatitoruluiInput, errorId: 'bancaPlatitorului-error', message: 'Banca plătitorului este obligatorie' },
-        { input: numarProcesVerbalInput, errorId: 'numarProcesVerbal-error', message: 'Numărul procesului verbal este obligatoriu' },
+        { input: bancaPlatitoruluiInput, errorId: 'bancaPlatitorului-error', message: 'Banca platitorului este obligatorie' },
+        { input: numarProcesVerbalInput, errorId: 'numarProcesVerbal-error', message: 'Numarul procesului verbal este obligatoriu' },
         { input: valoareAmendaInput, errorId: null, message: 'Valoarea amenzii este obligatorie' }
-        // dataEmiterii este automată și readonly, nu trebuie validată
     ];
 
     requiredFields.forEach(({ input, errorId, message }) => {
@@ -382,13 +363,11 @@ function validateForm() {
         }
     });
 
-    // Validate CNP format
     if (cnpSauCuiInput.value && cnpSauCuiInput.value.length !== 13) {
-        showFieldError(cnpSauCuiInput, 'CNP/CUI trebuie să aibă exact 13 cifre');
+        showFieldError(cnpSauCuiInput, 'CNP/CUI trebuie sa aiba exact 13 cifre');
         isValid = false;
     }
 
-    // Validate email format if provided
     if (emailInput.value && !isValidEmail(emailInput.value)) {
         showFieldError(emailInput, 'Format email invalid');
         isValid = false;
@@ -477,22 +456,20 @@ function clearMessage() {
     messageDiv.style.display = 'none';
 }
 
-// ============================================
 // TAB MANAGEMENT
-// ============================================
 
 function showTab(tabName) {
-    // Hide all tab contents
+
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
     
-    // Remove active class from all buttons
+
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     
-    // Show selected tab
+
     if (tabName === 'creare') {
         document.getElementById('creareAmendaForm').classList.add('active');
         document.querySelectorAll('.tab-btn')[0].classList.add('active');
@@ -502,9 +479,7 @@ function showTab(tabName) {
     }
 }
 
-// ============================================
 // CREARE AMENDA FORM
-// ============================================
 
 let creareAmendaForm;
 let btnCreeazaAmenda;
@@ -514,7 +489,7 @@ let zonaAmendaInput;
 let codAgentInput;
 let valoareAmendaCreareInput;
 
-// Initialize creare amenda form
+
 document.addEventListener('DOMContentLoaded', () => {
     creareAmendaForm = document.getElementById('creareAmendaForm');
     btnCreeazaAmenda = document.getElementById('btnCreeazaAmenda');
@@ -530,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await creeazaAmenda();
         });
         
-        // Real-time validation
+
         if (nrInmatriculareMasinaInput) {
             nrInmatriculareMasinaInput.addEventListener('input', (e) => {
                 e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -553,12 +528,12 @@ async function creeazaAmenda() {
     }
 
     if (!validateCreareAmendaForm()) {
-        showMessageCreare('Vă rugăm să completați toate câmpurile obligatorii corect', 'error');
+        showMessageCreare('Va rugam sa completați toate campurile obligatorii corect', 'error');
         return;
     }
 
     btnCreeazaAmenda.disabled = true;
-    btnCreeazaAmenda.textContent = 'Se creează...';
+    btnCreeazaAmenda.textContent = 'Se creeaza...';
 
     try {
         const amendaData = {
@@ -579,18 +554,17 @@ async function creeazaAmenda() {
         if (response.ok) {
             const result = await response.json();
             showMessageCreare(
-                `Amenda a fost creată cu succes! Număr proces verbal: ${result.numarProcesVerbal}`,
+                `Amenda a fost creata cu succes! Numar proces verbal: ${result.numarProcesVerbal}`,
                 'success'
             );
-            
-            // Reset form after successful creation
+
             setTimeout(() => {
                 resetCreareAmendaForm();
-            }, 2000);
+            }, 20000);
         } else {
-            const errorData = await response.json().catch(() => ({ message: 'Eroare necunoscută' }));
+            const errorData = await response.json().catch(() => ({ message: 'Eroare necunoscuta' }));
             showMessageCreare(
-                'Eroare la crearea amenzi: ' + (errorData.message || errorData.error || 'Eroare necunoscută'),
+                'Eroare la crearea amenzi: ' + (errorData.message || errorData.error || 'Eroare necunoscuta'),
                 'error'
             );
         }
@@ -608,33 +582,29 @@ function validateCreareAmendaForm() {
     }
 
     let isValid = true;
-    
-    // Validate nrInmatriculareMasina
+
     const nrInmatricularePattern = /^(?:[A-Z]{2}\d{2}[A-Z]{3}|B\d{2,3}[A-Z]{3})$/;
     if (!nrInmatriculareMasinaInput.value.trim()) {
-        showFieldError(nrInmatriculareMasinaInput, 'Numărul de înmatriculare este obligatoriu');
+        showFieldError(nrInmatriculareMasinaInput, 'Numarul de inmatriculare este obligatoriu');
         isValid = false;
     } else if (!nrInmatricularePattern.test(nrInmatriculareMasinaInput.value.trim().toUpperCase())) {
         showFieldError(nrInmatriculareMasinaInput, 'Format invalid. Format acceptat: B123ABC sau AB12ABC');
         isValid = false;
     }
 
-    // Validate zona
     if (!zonaAmendaInput.value.trim()) {
         showFieldError(zonaAmendaInput, 'Zona este obligatorie');
         isValid = false;
     }
 
-    // Validate codAgent
     if (!codAgentInput.value.trim()) {
         showFieldError(codAgentInput, 'Codul agentului este obligatoriu');
         isValid = false;
     }
 
-    // Validate valoareAmenda
     const valoare = parseInt(valoareAmendaCreareInput.value);
     if (!valoareAmendaCreareInput.value || isNaN(valoare) || valoare <= 0) {
-        showFieldError(valoareAmendaCreareInput, 'Valoarea amenzii trebuie să fie un număr pozitiv');
+        showFieldError(valoareAmendaCreareInput, 'Valoarea amenzii trebuie sa fie un numar pozitiv');
         isValid = false;
     }
 
@@ -646,8 +616,7 @@ function resetCreareAmendaForm() {
         creareAmendaForm.reset();
     }
     clearMessageCreare();
-    
-    // Clear all field errors
+
     if (nrInmatriculareMasinaInput) clearFieldError(nrInmatriculareMasinaInput);
     if (zonaAmendaInput) clearFieldError(zonaAmendaInput);
     if (codAgentInput) clearFieldError(codAgentInput);
@@ -659,9 +628,17 @@ function showMessageCreare(message, type) {
     
     messageCreare.textContent = message;
     messageCreare.className = `message ${type}`;
+    messageCreare.style.display = 'block';
     
-    if (type === 'info') {
-        messageCreare.style.display = 'block';
+    if (type === 'success') {
+        messageCreare.style.backgroundColor = '#d4edda';
+        messageCreare.style.color = '#155724';
+        messageCreare.style.border = '1px solid #c3e6cb';
+    } else if (type === 'error') {
+        messageCreare.style.backgroundColor = '#f8d7da';
+        messageCreare.style.color = '#721c24';
+        messageCreare.style.border = '1px solid #f5c6cb';
+    } else if (type === 'info') {
         messageCreare.style.backgroundColor = '#d1ecf1';
         messageCreare.style.color = '#0c5460';
         messageCreare.style.border = '1px solid #bee5eb';
