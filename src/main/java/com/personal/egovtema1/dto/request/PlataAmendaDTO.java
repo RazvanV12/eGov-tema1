@@ -1,6 +1,7 @@
 package com.personal.egovtema1.dto.request;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -37,6 +38,8 @@ public class PlataAmendaDTO {
     @NotBlank(message = "Adresa poștală este obligatorie")
     private String adresaPostala;
 
+    @JsonProperty("IBAN")
+    @NotBlank(message = "IBAN-ul este obligatoriu")
     private String IBAN;
 
     @NotBlank(message = "Banca plătitorului (BIC) este obligatorie")
