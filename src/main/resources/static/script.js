@@ -28,6 +28,10 @@ const tipCalculSpan = document.getElementById('tipCalcul');
 const reducerePenalitateSpan = document.getElementById('reducerePenalitate');
 const sumaTotalaSpan = document.getElementById('sumaTotala');
 
+const tipPersoanaSelect = document.getElementById('tipPersoana');
+const cnpSauCuiLabel = document.getElementById('cnpSauCui-label');
+const cnpSauCuiHelp = document.getElementById('cnpSauCui-help');
+
 // State
 let currentAmenda = null;
 let calculatedSum = 0;
@@ -66,6 +70,12 @@ function setupEventListeners() {
         await submitForm();
     });
 
+    if (tipPersoanaSelect) {
+        tipPersoanaSelect.addEventListener('change', onTipPersoanaChange);
+    }
+    // ensure initial state
+    onTipPersoanaChange();
+
     const inputs = form.querySelectorAll('input, textarea');
     inputs.forEach(input => {
         input.addEventListener('blur', () => validateField(input));
@@ -75,14 +85,44 @@ function setupEventListeners() {
 
 function setupValidation() {
 
-    cnpSauCuiInput.addEventListener('input', (e) => {
-        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13);
-    });
-
     ibanInput.addEventListener('input', (e) => {
         let value = e.target.value.toUpperCase().replace(/\s/g, '');
         e.target.value = value;
     });
+
+    cnpSauCuiInput.addEventListener('input', (e) => {
+        const type = tipPersoanaSelect ? tipPersoanaSelect.value : 'fizica';
+        if (type === 'fizica') {
+            // only digits and max 13
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13);
+        } else {
+            // only digits and max 10 (CUI typical length up to 10)
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+        }
+    });
+}
+
+function onTipPersoanaChange() {
+    const type = tipPersoanaSelect ? tipPersoanaSelect.value : 'fizica';
+
+    if (type === 'fizica') {
+        cnpSauCuiLabel.innerHTML = `CNP (Persoana Fizica) <span class="required">*</span>`;
+        cnpSauCuiInput.setAttribute('placeholder', '13 cifre');
+        cnpSauCuiInput.setAttribute('maxlength', '13');
+        cnpSauCuiInput.setAttribute('pattern', '\\d{13}');
+        cnpSauCuiHelp.textContent = '13 cifre';
+    } else {
+        cnpSauCuiLabel.innerHTML = `CUI (Persoana Juridica) <span class="required">*</span>`;
+        cnpSauCuiInput.setAttribute('placeholder', 'CUI (2-10 cifre)');
+        cnpSauCuiInput.setAttribute('maxlength', '10');
+        cnpSauCuiInput.setAttribute('pattern', '\\d{2,10}');
+        cnpSauCuiHelp.textContent = '2-10 cifre (doar cifre pentru CUI)';
+    }
+
+    // clear previous errors
+    clearFieldError(cnpSauCuiInput);
+    // re-validate form enabling/disabling submit if needed
+    enableSubmitButton();
 }
 
 async function loadAmendaByPV(numarPV) {
@@ -220,10 +260,20 @@ function generatePaymentOrderPdf(formData) {
     doc.text('PLATITOR:', 20, yPos);
     yPos += 8;
     doc.setFont('helvetica', 'normal');
+    
+    // Add Tip Persoana
+    const tipPersoanaText = formData.tipPersoana === 'fizica' ? 'Persoana Fizica' : 'Persoana Juridica';
+    doc.text(`Tip Persoana: ${tipPersoanaText}`, 25, yPos);
+    yPos += 6;
+    
     doc.text(`Nume: ${removeDiacritics(formData.nume)} ${removeDiacritics(formData.prenume)}`, 25, yPos);
     yPos += 6;
-    doc.text(`CNP/CUI: ${formData.cnpSauCui}`, 25, yPos);
+    
+    // Show CNP or CUI based on person type
+    const cnpCuiLabel = formData.tipPersoana === 'fizica' ? 'CNP' : 'CUI';
+    doc.text(`${cnpCuiLabel}: ${formData.cnpSauCui}`, 25, yPos);
     yPos += 6;
+    
     doc.text(`Email: ${formData.email || 'N/A'}`, 25, yPos);
     yPos += 6;
     doc.text(`Adresa: ${removeDiacritics(formData.adresaPostala)}`, 25, yPos);
@@ -328,6 +378,7 @@ async function submitForm() {
 
 function collectFormData() {
     return {
+        tipPersoana: tipPersoanaSelect ? tipPersoanaSelect.value : 'fizica',
         nume: numeInput.value.trim(),
         prenume: prenumeInput.value.trim(),
         cnpSauCui: cnpSauCuiInput.value.trim(),
@@ -346,7 +397,7 @@ function validateForm() {
     const requiredFields = [
         { input: numeInput, errorId: 'nume-error', message: 'Numele este obligatoriu' },
         { input: prenumeInput, errorId: 'prenume-error', message: 'Prenumele este obligatoriu' },
-        { input: cnpSauCuiInput, errorId: 'cnpSauCui-error', message: 'CNP/CUI este obligatoriu (13 cifre)' },
+        { input: cnpSauCuiInput, errorId: 'cnpSauCui-error', message: 'CNP/CUI este obligatoriu' },
         { input: adresaPostalaInput, errorId: 'adresaPostala-error', message: 'Adresa poștala este obligatorie' },
         { input: ibanInput, errorId: 'iban-error', message: 'IBAN-ul este obligatoriu' },
         { input: bancaPlatitoruluiInput, errorId: 'bancaPlatitorului-error', message: 'Banca platitorului este obligatorie' },
@@ -363,9 +414,18 @@ function validateForm() {
         }
     });
 
-    if (cnpSauCuiInput.value && cnpSauCuiInput.value.length !== 13) {
-        showFieldError(cnpSauCuiInput, 'CNP/CUI trebuie sa aiba exact 13 cifre');
-        isValid = false;
+    const type = tipPersoanaSelect ? tipPersoanaSelect.value : 'fizica';
+    if (type === 'fizica') {
+        if (!cnpSauCuiInput.value || cnpSauCuiInput.value.length !== 13) {
+            showFieldError(cnpSauCuiInput, 'CNP trebuie sa aiba exact 13 cifre');
+            isValid = false;
+        }
+    } else {
+        const len = cnpSauCuiInput.value.length;
+        if (!cnpSauCuiInput.value || len < 2 || len > 10) {
+            showFieldError(cnpSauCuiInput, 'CUI trebuie sa aiba intre 2 si 10 cifre');
+            isValid = false;
+        }
     }
 
     if (emailInput.value && !isValidEmail(emailInput.value)) {
@@ -384,10 +444,6 @@ function validateField(field) {
     }
 
     if (field.type === 'email' && field.value && !isValidEmail(field.value)) {
-        return false;
-    }
-
-    if (field.id === 'cnpSauCui' && field.value && field.value.length !== 13) {
         return false;
     }
 
@@ -650,4 +706,3 @@ function clearMessageCreare() {
         messageCreare.style.display = 'none';
     }
 }
-

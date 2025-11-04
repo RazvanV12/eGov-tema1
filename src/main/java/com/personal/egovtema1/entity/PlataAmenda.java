@@ -29,8 +29,9 @@ public class PlataAmenda {
     @NotBlank(message = "Prenumele este obligatoriu")
     private String prenume;
 
+    private String tipPersoana;
+
     @NotBlank(message = "CNP/CUI este obligatoriu")
-    @Pattern(regexp = "\\d{13}", message = "CNP trebuie să aibă 13 cifre")
     private String cnpSauCui;
 
     @Email(message = "Email invalid")

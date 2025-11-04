@@ -26,14 +26,15 @@ public class OrdinPlataService {
         ordin.setDataEmiterii(plataAmenda.getDataCompletarii().toString());
 
         ordin.setPlatitor(Platitor.builder()
-                .nume(plataAmenda.getNume())
-                .prenume(plataAmenda.getPrenume())
-                .cnpSauCui(plataAmenda.getCnpSauCui())
-                .iban(plataAmenda.getIBAN())
-                .banca(plataAmenda.getBancaPlatitorului())
-                .adresaPostala(plataAmenda.getAdresaPostala())
-                .email(plataAmenda.getEmail())
-                .build());
+                                  .tipPersoana(plataAmenda.getTipPersoana())
+                                  .nume(plataAmenda.getNume())
+                                  .prenume(plataAmenda.getPrenume())
+                                  .cnpSauCui(plataAmenda.getCnpSauCui())
+                                  .iban(plataAmenda.getIBAN())
+                                  .banca(plataAmenda.getBancaPlatitorului())
+                                  .adresaPostala(plataAmenda.getAdresaPostala())
+                                  .email(plataAmenda.getEmail())
+                                  .build());
 
         ordin.setBeneficiar(beneficiarConfig.toBeneficiar());
 

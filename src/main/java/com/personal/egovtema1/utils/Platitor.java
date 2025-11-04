@@ -24,6 +24,9 @@ public class Platitor {
     @XmlElement(name = "Prenume")
     private String prenume;
 
+    @XmlElement(name = "Tip Persoana")
+    private String tipPersoana;
+
     @XmlElement(name = "CNP/CUI")
     private String cnpSauCui;
 

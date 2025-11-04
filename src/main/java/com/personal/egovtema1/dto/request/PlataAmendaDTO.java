@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PlataAmendaDTO {
 
+    private String tipPersoana;
+
     @NotBlank(message = "Numele este obligatoriu")
     private String nume;
 
@@ -29,7 +31,6 @@ public class PlataAmendaDTO {
     private String prenume;
 
     @NotBlank(message = "CNP/CUI este obligatoriu")
-    @Pattern(regexp = "\\d{13}", message = "CNP trebuie să aibă 13 cifre")
     private String cnpSauCui;
 
     @Email(message = "Email invalid")
